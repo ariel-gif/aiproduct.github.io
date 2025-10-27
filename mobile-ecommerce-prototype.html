@@ -1,0 +1,1159 @@
+(cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF'
+diff --git a/mobile-ecommerce-prototype.html b/mobile-ecommerce-prototype.html
+--- a/mobile-ecommerce-prototype.html
++++ b/mobile-ecommerce-prototype.html
+@@ -0,0 +1,1152 @@
++<!DOCTYPE html>
++<html lang="zh-CN">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>移动端电商App原型</title>
++    <style>
++        * {
++            margin: 0;
++            padding: 0;
++            box-sizing: border-box;
++        }
++
++        body {
++            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
++            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
++            height: 100vh;
++            overflow: hidden;
++        }
++
++        .container {
++            display: flex;
++            height: 100vh;
++            max-width: 1200px;
++            margin: 0 auto;
++            background: white;
++            box-shadow: 0 0 20px rgba(0,0,0,0.1);
++        }
++
++        /* 左侧导航栏 */
++        .sidebar {
++            width: 200px;
++            background: #2c3e50;
++            color: white;
++            padding: 20px 0;
++            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
++        }
++
++        .sidebar h2 {
++            text-align: center;
++            margin-bottom: 30px;
++            color: #ecf0f1;
++            font-size: 18px;
++        }
++
++        .nav-list {
++            list-style: none;
++        }
++
++        .nav-item {
++            padding: 15px 20px;
++            cursor: pointer;
++            transition: all 0.3s ease;
++            border-left: 3px solid transparent;
++            display: flex;
++            align-items: center;
++        }
++
++        .nav-item:hover {
++            background: #34495e;
++            border-left-color: #3498db;
++        }
++
++        .nav-item.active {
++            background: #3498db;
++            border-left-color: #2980b9;
++        }
++
++        .nav-item i {
++            margin-right: 10px;
++            width: 20px;
++            text-align: center;
++        }
++
++        /* 右侧手机模拟器区域 */
++        .phone-container {
++            flex: 1;
++            display: flex;
++            justify-content: center;
++            align-items: center;
++            background: #f8f9fa;
++            padding: 20px;
++        }
++
++        .phone-frame {
++            width: 375px;
++            height: 667px;
++            background: #000;
++            border-radius: 25px;
++            padding: 20px 8px;
++            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
++            position: relative;
++        }
++
++        .phone-frame::before {
++            content: '';
++            position: absolute;
++            top: 8px;
++            left: 50%;
++            transform: translateX(-50%);
++            width: 60px;
++            height: 4px;
++            background: #333;
++            border-radius: 2px;
++        }
++
++        .phone-screen {
++            width: 100%;
++            height: 100%;
++            background: white;
++            border-radius: 20px;
++            overflow: hidden;
++            position: relative;
++        }
++
++        .page {
++            position: absolute;
++            top: 0;
++            left: 0;
++            width: 100%;
++            height: 100%;
++            opacity: 0;
++            transform: translateX(100%);
++            transition: all 0.3s ease;
++            overflow-y: auto;
++        }
++
++        .page.active {
++            opacity: 1;
++            transform: translateX(0);
++        }
++
++        /* 状态栏 */
++        .status-bar {
++            height: 44px;
++            background: #fff;
++            display: flex;
++            justify-content: space-between;
++            align-items: center;
++            padding: 0 15px;
++            font-size: 14px;
++            font-weight: 600;
++            border-bottom: 1px solid #eee;
++        }
++
++        .page-content {
++            height: calc(100% - 44px);
++            overflow-y: auto;
++        }
++
++        /* 首页样式 */
++        .banner-container {
++            position: relative;
++            height: 180px;
++            overflow: hidden;
++        }
++
++        .banner-slide {
++            position: absolute;
++            width: 100%;
++            height: 100%;
++            opacity: 0;
++            transition: opacity 0.5s ease;
++        }
++
++        .banner-slide.active {
++            opacity: 1;
++        }
++
++        .banner-slide img {
++            width: 100%;
++            height: 100%;
++            object-fit: cover;
++        }
++
++        .banner-dots {
++            position: absolute;
++            bottom: 10px;
++            left: 50%;
++            transform: translateX(-50%);
++            display: flex;
++            gap: 8px;
++        }
++
++        .dot {
++            width: 8px;
++            height: 8px;
++            border-radius: 50%;
++            background: rgba(255,255,255,0.5);
++            cursor: pointer;
++            transition: background 0.3s ease;
++        }
++
++        .dot.active {
++            background: white;
++        }
++
++        .categories {
++            padding: 20px 15px;
++            background: white;
++        }
++
++        .categories h3 {
++            margin-bottom: 15px;
++            color: #333;
++        }
++
++        .category-grid {
++            display: grid;
++            grid-template-columns: repeat(4, 1fr);
++            gap: 15px;
++        }
++
++        .category-item {
++            text-align: center;
++            padding: 15px 5px;
++            border-radius: 8px;
++            transition: background 0.3s ease;
++        }
++
++        .category-item:hover {
++            background: #f8f9fa;
++        }
++
++        .category-icon {
++            width: 40px;
++            height: 40px;
++            background: #3498db;
++            border-radius: 50%;
++            margin: 0 auto 8px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: white;
++            font-size: 18px;
++        }
++
++        .category-name {
++            font-size: 12px;
++            color: #666;
++        }
++
++        .products {
++            padding: 20px 15px;
++            background: #f8f9fa;
++        }
++
++        .products h3 {
++            margin-bottom: 15px;
++            color: #333;
++        }
++
++        .product-grid {
++            display: grid;
++            grid-template-columns: repeat(2, 1fr);
++            gap: 15px;
++        }
++
++        .product-card {
++            background: white;
++            border-radius: 8px;
++            overflow: hidden;
++            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
++            transition: transform 0.3s ease;
++        }
++
++        .product-card:hover {
++            transform: translateY(-2px);
++        }
++
++        .product-image {
++            width: 100%;
++            height: 120px;
++            background: #ddd;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: #999;
++        }
++
++        .product-info {
++            padding: 10px;
++        }
++
++        .product-name {
++            font-size: 14px;
++            color: #333;
++            margin-bottom: 5px;
++            overflow: hidden;
++            text-overflow: ellipsis;
++            white-space: nowrap;
++        }
++
++        .product-price {
++            color: #e74c3c;
++            font-weight: bold;
++            font-size: 16px;
++        }
++
++        /* 商品分类页样式 */
++        .category-page {
++            display: flex;
++            height: 100%;
++        }
++
++        .category-sidebar {
++            width: 80px;
++            background: #f8f9fa;
++            border-right: 1px solid #eee;
++        }
++
++        .category-nav {
++            list-style: none;
++        }
++
++        .category-nav-item {
++            padding: 15px 10px;
++            text-align: center;
++            cursor: pointer;
++            border-bottom: 1px solid #eee;
++            font-size: 12px;
++            transition: background 0.3s ease;
++        }
++
++        .category-nav-item:hover,
++        .category-nav-item.active {
++            background: white;
++            color: #3498db;
++        }
++
++        .category-content {
++            flex: 1;
++            padding: 15px;
++            overflow-y: auto;
++        }
++
++        .subcategory-grid {
++            display: grid;
++            grid-template-columns: repeat(3, 1fr);
++            gap: 15px;
++        }
++
++        .subcategory-item {
++            text-align: center;
++            padding: 20px 10px;
++            background: white;
++            border-radius: 8px;
++            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
++        }
++
++        .subcategory-icon {
++            width: 50px;
++            height: 50px;
++            background: #3498db;
++            border-radius: 8px;
++            margin: 0 auto 10px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: white;
++            font-size: 20px;
++        }
++
++        /* 购物车样式 */
++        .cart-item {
++            display: flex;
++            padding: 15px;
++            background: white;
++            margin-bottom: 10px;
++            border-radius: 8px;
++        }
++
++        .cart-item-image {
++            width: 80px;
++            height: 80px;
++            background: #ddd;
++            border-radius: 4px;
++            margin-right: 15px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: #999;
++        }
++
++        .cart-item-info {
++            flex: 1;
++        }
++
++        .cart-item-name {
++            font-size: 14px;
++            color: #333;
++            margin-bottom: 5px;
++        }
++
++        .cart-item-spec {
++            font-size: 12px;
++            color: #999;
++            margin-bottom: 10px;
++        }
++
++        .cart-item-controls {
++            display: flex;
++            justify-content: space-between;
++            align-items: center;
++        }
++
++        .cart-item-price {
++            color: #e74c3c;
++            font-weight: bold;
++        }
++
++        .quantity-controls {
++            display: flex;
++            align-items: center;
++            gap: 10px;
++        }
++
++        .quantity-btn {
++            width: 30px;
++            height: 30px;
++            border: 1px solid #ddd;
++            background: white;
++            border-radius: 4px;
++            cursor: pointer;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++        }
++
++        .cart-summary {
++            position: fixed;
++            bottom: 0;
++            left: 0;
++            right: 0;
++            background: white;
++            padding: 15px;
++            border-top: 1px solid #eee;
++            display: flex;
++            justify-content: space-between;
++            align-items: center;
++        }
++
++        .total-price {
++            font-size: 18px;
++            font-weight: bold;
++            color: #e74c3c;
++        }
++
++        .checkout-btn {
++            background: #e74c3c;
++            color: white;
++            border: none;
++            padding: 12px 30px;
++            border-radius: 6px;
++            cursor: pointer;
++            font-size: 16px;
++        }
++
++        /* 订单页样式 */
++        .order-tabs {
++            display: flex;
++            background: white;
++            border-bottom: 1px solid #eee;
++        }
++
++        .order-tab {
++            flex: 1;
++            padding: 15px;
++            text-align: center;
++            cursor: pointer;
++            font-size: 14px;
++            color: #666;
++            border-bottom: 2px solid transparent;
++        }
++
++        .order-tab.active {
++            color: #3498db;
++            border-bottom-color: #3498db;
++        }
++
++        .order-list {
++            padding: 15px;
++        }
++
++        .order-item {
++            background: white;
++            border-radius: 8px;
++            padding: 15px;
++            margin-bottom: 15px;
++            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
++        }
++
++        .order-header {
++            display: flex;
++            justify-content: space-between;
++            align-items: center;
++            margin-bottom: 10px;
++            padding-bottom: 10px;
++            border-bottom: 1px solid #eee;
++        }
++
++        .order-status {
++            color: #3498db;
++            font-weight: bold;
++        }
++
++        .order-products {
++            display: flex;
++            gap: 10px;
++            margin-bottom: 10px;
++        }
++
++        .order-product-image {
++            width: 60px;
++            height: 60px;
++            background: #ddd;
++            border-radius: 4px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: #999;
++            font-size: 12px;
++        }
++
++        .order-total {
++            text-align: right;
++            font-size: 16px;
++            font-weight: bold;
++            color: #e74c3c;
++        }
++
++        /* 个人中心样式 */
++        .profile-header {
++            background: linear-gradient(135deg, #3498db, #2980b9);
++            color: white;
++            padding: 30px 20px;
++            text-align: center;
++        }
++
++        .profile-avatar {
++            width: 80px;
++            height: 80px;
++            border-radius: 50%;
++            background: rgba(255,255,255,0.2);
++            margin: 0 auto 15px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            font-size: 30px;
++        }
++
++        .profile-name {
++            font-size: 18px;
++            margin-bottom: 5px;
++        }
++
++        .profile-level {
++            font-size: 14px;
++            opacity: 0.8;
++        }
++
++        .profile-menu {
++            padding: 20px 15px;
++        }
++
++        .menu-group {
++            margin-bottom: 20px;
++        }
++
++        .menu-item {
++            display: flex;
++            align-items: center;
++            padding: 15px 0;
++            border-bottom: 1px solid #eee;
++            cursor: pointer;
++        }
++
++        .menu-item:last-child {
++            border-bottom: none;
++        }
++
++        .menu-icon {
++            width: 40px;
++            height: 40px;
++            background: #3498db;
++            border-radius: 8px;
++            display: flex;
++            align-items: center;
++            justify-content: center;
++            color: white;
++            margin-right: 15px;
++        }
++
++        .menu-text {
++            flex: 1;
++            font-size: 16px;
++            color: #333;
++        }
++
++        .menu-arrow {
++            color: #ccc;
++        }
++
++        /* 响应式设计 */
++        @media (max-width: 768px) {
++            .container {
++                flex-direction: column;
++            }
++            
++            .sidebar {
++                width: 100%;
++                height: auto;
++                order: 2;
++            }
++            
++            .nav-list {
++                display: flex;
++                overflow-x: auto;
++            }
++            
++            .nav-item {
++                min-width: 120px;
++                text-align: center;
++            }
++            
++            .phone-container {
++                order: 1;
++                flex: 1;
++            }
++        }
++    </style>
++</head>
++<body>
++    <div class="container">
++        <!-- 左侧导航栏 -->
++        <div class="sidebar">
++            <h2>📱 电商App原型</h2>
++            <ul class="nav-list">
++                <li class="nav-item active" data-page="home">
++                    <i>🏠</i>
++                    <span>首页</span>
++                </li>
++                <li class="nav-item" data-page="category">
++                    <i>📂</i>
++                    <span>商品分类</span>
++                </li>
++                <li class="nav-item" data-page="cart">
++                    <i>🛒</i>
++                    <span>购物车</span>
++                </li>
++                <li class="nav-item" data-page="orders">
++                    <i>📋</i>
++                    <span>我的订单</span>
++                </li>
++                <li class="nav-item" data-page="profile">
++                    <i>👤</i>
++                    <span>个人中心</span>
++                </li>
++            </ul>
++        </div>
++
++        <!-- 右侧手机模拟器 -->
++        <div class="phone-container">
++            <div class="phone-frame">
++                <div class="phone-screen">
++                    <!-- 首页 -->
++                    <div class="page active" id="home">
++                        <div class="status-bar">
++                            <span>9:41</span>
++                            <span>首页</span>
++                            <span>🔋100%</span>
++                        </div>
++                        <div class="page-content">
++                            <!-- 轮播图 -->
++                            <div class="banner-container">
++                                <div class="banner-slide active">
++                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDM3NSAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzNzUiIGhlaWdodD0iMTgwIiBmaWxsPSIjM0Y4M0Y4Ii8+Cjx0ZXh0IHg9IjE4Ny41IiB5PSI5MCIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+6L2u5pKt5Zu+IDEgLSDnlLXlrZDkuqflk4E8L3RleHQ+Cjwvc3ZnPgo=" alt="Banner 1">
++                                </div>
++                                <div class="banner-slide">
++                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDM3NSAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzNzUiIGhlaWdodD0iMTgwIiBmaWxsPSIjRUY0NDQ0Ii8+Cjx0ZXh0IHg9IjE4Ny41IiB5PSI5MCIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+6L2u5pKt5Zu+IDIgLSDnlLXlrZDkuqflk4E8L3RleHQ+Cjwvc3ZnPgo=" alt="Banner 2">
++                                </div>
++                                <div class="banner-slide">
++                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzc1IiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDM3NSAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzNzUiIGhlaWdodD0iMTgwIiBmaWxsPSIjMTBCOTgxIi8+Cjx0ZXh0IHg9IjE4Ny41IiB5PSI5MCIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+6L2u5pKt5Zu+IDMgLSDnlLXlrZDkuqflk4E8L3RleHQ+Cjwvc3ZnPgo=" alt="Banner 3">
++                                </div>
++                                <div class="banner-dots">
++                                    <div class="dot active" data-slide="0"></div>
++                                    <div class="dot" data-slide="1"></div>
++                                    <div class="dot" data-slide="2"></div>
++                                </div>
++                            </div>
++
++                            <!-- 商品分类 -->
++                            <div class="categories">
++                                <h3>商品分类</h3>
++                                <div class="category-grid">
++                                    <div class="category-item">
++                                        <div class="category-icon">👗</div>
++                                        <div class="category-name">服装</div>
++                                    </div>
++                                    <div class="category-item">
++                                        <div class="category-icon">📱</div>
++                                        <div class="category-name">数码</div>
++                                    </div>
++                                    <div class="category-item">
++                                        <div class="category-icon">🏠</div>
++                                        <div class="category-name">家居</div>
++                                    </div>
++                                    <div class="category-item">
++                                        <div class="category-icon">🍎</div>
++                                        <div class="category-name">食品</div>
++                                    </div>
++                                </div>
++                            </div>
++
++                            <!-- 热门推荐 -->
++                            <div class="products">
++                                <h3>热门推荐</h3>
++                                <div class="product-grid">
++                                    <div class="product-card">
++                                        <div class="product-image">商品图片</div>
++                                        <div class="product-info">
++                                            <div class="product-name">时尚连衣裙</div>
++                                            <div class="product-price">¥299</div>
++                                        </div>
++                                    </div>
++                                    <div class="product-card">
++                                        <div class="product-image">商品图片</div>
++                                        <div class="product-info">
++                                            <div class="product-name">智能手机</div>
++                                            <div class="product-price">¥2999</div>
++                                        </div>
++                                    </div>
++                                    <div class="product-card">
++                                        <div class="product-image">商品图片</div>
++                                        <div class="product-info">
++                                            <div class="product-name">舒适沙发</div>
++                                            <div class="product-price">¥1999</div>
++                                        </div>
++                                    </div>
++                                    <div class="product-card">
++                                        <div class="product-image">商品图片</div>
++                                        <div class="product-info">
++                                            <div class="product-name">有机水果</div>
++                                            <div class="product-price">¥99</div>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                        </div>
++                    </div>
++
++                    <!-- 商品分类页 -->
++                    <div class="page" id="category">
++                        <div class="status-bar">
++                            <span>9:41</span>
++                            <span>商品分类</span>
++                            <span>🔋100%</span>
++                        </div>
++                        <div class="page-content">
++                            <div class="category-page">
++                                <div class="category-sidebar">
++                                    <ul class="category-nav">
++                                        <li class="category-nav-item active">服装</li>
++                                        <li class="category-nav-item">数码</li>
++                                        <li class="category-nav-item">家居</li>
++                                        <li class="category-nav-item">食品</li>
++                                        <li class="category-nav-item">运动</li>
++                                        <li class="category-nav-item">美妆</li>
++                                    </ul>
++                                </div>
++                                <div class="category-content">
++                                    <div class="subcategory-grid">
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">👕</div>
++                                            <div>男装</div>
++                                        </div>
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">👗</div>
++                                            <div>女装</div>
++                                        </div>
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">👶</div>
++                                            <div>童装</div>
++                                        </div>
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">👟</div>
++                                            <div>鞋靴</div>
++                                        </div>
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">👜</div>
++                                            <div>箱包</div>
++                                        </div>
++                                        <div class="subcategory-item">
++                                            <div class="subcategory-icon">💍</div>
++                                            <div>配饰</div>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                        </div>
++                    </div>
++
++                    <!-- 购物车页 -->
++                    <div class="page" id="cart">
++                        <div class="status-bar">
++                            <span>9:41</span>
++                            <span>购物车</span>
++                            <span>🔋100%</span>
++                        </div>
++                        <div class="page-content" style="padding-bottom: 80px;">
++                            <div style="padding: 15px;">
++                                <div class="cart-item">
++                                    <div class="cart-item-image">商品图</div>
++                                    <div class="cart-item-info">
++                                        <div class="cart-item-name">时尚连衣裙</div>
++                                        <div class="cart-item-spec">颜色：红色 尺码：M</div>
++                                        <div class="cart-item-controls">
++                                            <div class="cart-item-price">¥299</div>
++                                            <div class="quantity-controls">
++                                                <button class="quantity-btn">-</button>
++                                                <span>1</span>
++                                                <button class="quantity-btn">+</button>
++                                                <button class="quantity-btn" style="color: #e74c3c;">🗑</button>
++                                            </div>
++                                        </div>
++                                    </div>
++                                </div>
++
++                                <div class="cart-item">
++                                    <div class="cart-item-image">商品图</div>
++                                    <div class="cart-item-info">
++                                        <div class="cart-item-name">智能手机</div>
++                                        <div class="cart-item-spec">颜色：黑色 内存：128GB</div>
++                                        <div class="cart-item-controls">
++                                            <div class="cart-item-price">¥2999</div>
++                                            <div class="quantity-controls">
++                                                <button class="quantity-btn">-</button>
++                                                <span>1</span>
++                                                <button class="quantity-btn">+</button>
++                                                <button class="quantity-btn" style="color: #e74c3c;">🗑</button>
++                                            </div>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++
++                            <div class="cart-summary">
++                                <div class="total-price">合计：¥3298</div>
++                                <button class="checkout-btn">去结算</button>
++                            </div>
++                        </div>
++                    </div>
++
++                    <!-- 我的订单页 -->
++                    <div class="page" id="orders">
++                        <div class="status-bar">
++                            <span>9:41</span>
++                            <span>我的订单</span>
++                            <span>🔋100%</span>
++                        </div>
++                        <div class="page-content">
++                            <div class="order-tabs">
++                                <div class="order-tab active">全部</div>
++                                <div class="order-tab">待付款</div>
++                                <div class="order-tab">待发货</div>
++                                <div class="order-tab">待收货</div>
++                                <div class="order-tab">已完成</div>
++                            </div>
++
++                            <div class="order-list">
++                                <div class="order-item">
++                                    <div class="order-header">
++                                        <span>订单号：202310240001</span>
++                                        <span class="order-status">待付款</span>
++                                    </div>
++                                    <div class="order-products">
++                                        <div class="order-product-image">商品图</div>
++                                        <div class="order-product-image">商品图</div>
++                                        <div class="order-product-image">+1</div>
++                                    </div>
++                                    <div class="order-total">合计：¥599</div>
++                                </div>
++
++                                <div class="order-item">
++                                    <div class="order-header">
++                                        <span>订单号：202310230002</span>
++                                        <span class="order-status">待发货</span>
++                                    </div>
++                                    <div class="order-products">
++                                        <div class="order-product-image">商品图</div>
++                                        <div class="order-product-image">商品图</div>
++                                    </div>
++                                    <div class="order-total">合计：¥1299</div>
++                                </div>
++
++                                <div class="order-item">
++                                    <div class="order-header">
++                                        <span>订单号：202310220003</span>
++                                        <span class="order-status">已完成</span>
++                                    </div>
++                                    <div class="order-products">
++                                        <div class="order-product-image">商品图</div>
++                                    </div>
++                                    <div class="order-total">合计：¥299</div>
++                                </div>
++                            </div>
++                        </div>
++                    </div>
++
++                    <!-- 个人中心页 -->
++                    <div class="page" id="profile">
++                        <div class="status-bar">
++                            <span>9:41</span>
++                            <span>个人中心</span>
++                            <span>🔋100%</span>
++                        </div>
++                        <div class="page-content">
++                            <div class="profile-header">
++                                <div class="profile-avatar">👤</div>
++                                <div class="profile-name">用户昵称</div>
++                                <div class="profile-level">VIP会员</div>
++                            </div>
++
++                            <div class="profile-menu">
++                                <div class="menu-group">
++                                    <div class="menu-item">
++                                        <div class="menu-icon">🎫</div>
++                                        <div class="menu-text">我的优惠券</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                    <div class="menu-item">
++                                        <div class="menu-icon">📍</div>
++                                        <div class="menu-text">收货地址</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                    <div class="menu-item">
++                                        <div class="menu-icon">💳</div>
++                                        <div class="menu-text">支付方式</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                </div>
++
++                                <div class="menu-group">
++                                    <div class="menu-item">
++                                        <div class="menu-icon">🛡️</div>
++                                        <div class="menu-text">账户安全</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                    <div class="menu-item">
++                                        <div class="menu-icon">🔔</div>
++                                        <div class="menu-text">消息通知</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                    <div class="menu-item">
++                                        <div class="menu-icon">⚙️</div>
++                                        <div class="menu-text">设置</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                </div>
++
++                                <div class="menu-group">
++                                    <div class="menu-item">
++                                        <div class="menu-icon">❓</div>
++                                        <div class="menu-text">帮助中心</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                    <div class="menu-item">
++                                        <div class="menu-icon">📞</div>
++                                        <div class="menu-text">联系客服</div>
++                                        <div class="menu-arrow">></div>
++                                    </div>
++                                </div>
++                            </div>
++                        </div>
++                    </div>
++                </div>
++            </div>
++        </div>
++    </div>
++
++    <script>
++        // 页面切换功能
++        function switchPage(pageId) {
++            // 隐藏所有页面
++            const pages = document.querySelectorAll('.page');
++            pages.forEach(page => {
++                page.classList.remove('active');
++            });
++
++            // 显示目标页面
++            const targetPage = document.getElementById(pageId);
++            if (targetPage) {
++                targetPage.classList.add('active');
++            }
++
++            // 更新导航状态
++            const navItems = document.querySelectorAll('.nav-item');
++            navItems.forEach(item => {
++                item.classList.remove('active');
++            });
++
++            const activeNavItem = document.querySelector(`[data-page="${pageId}"]`);
++            if (activeNavItem) {
++                activeNavItem.classList.add('active');
++            }
++        }
++
++        // 导航点击事件
++        document.querySelectorAll('.nav-item').forEach(item => {
++            item.addEventListener('click', () => {
++                const pageId = item.getAttribute('data-page');
++                switchPage(pageId);
++            });
++        });
++
++        // 轮播图功能
++        let currentSlide = 0;
++        const slides = document.querySelectorAll('.banner-slide');
++        const dots = document.querySelectorAll('.dot');
++
++        function showSlide(index) {
++            slides.forEach((slide, i) => {
++                slide.classList.toggle('active', i === index);
++            });
++            dots.forEach((dot, i) => {
++                dot.classList.toggle('active', i === index);
++            });
++            currentSlide = index;
++        }
++
++        function nextSlide() {
++            currentSlide = (currentSlide + 1) % slides.length;
++            showSlide(currentSlide);
++        }
++
++        // 自动播放轮播图
++        setInterval(nextSlide, 3000);
++
++        // 点击圆点切换
++        dots.forEach((dot, index) => {
++            dot.addEventListener('click', () => {
++                showSlide(index);
++            });
++        });
++
++        // 商品分类页面切换
++        document.querySelectorAll('.category-nav-item').forEach(item => {
++            item.addEventListener('click', () => {
++                document.querySelectorAll('.category-nav-item').forEach(navItem => {
++                    navItem.classList.remove('active');
++                });
++                item.classList.add('active');
++                
++                // 这里可以根据选中的分类加载不同的子分类内容
++                // 为了演示，我们保持子分类内容不变
++            });
++        });
++
++        // 购物车数量控制
++        document.querySelectorAll('.quantity-btn').forEach(btn => {
++            btn.addEventListener('click', (e) => {
++                const text = btn.textContent;
++                const quantitySpan = btn.parentNode.querySelector('span');
++                let quantity = parseInt(quantitySpan.textContent);
++
++                if (text === '+') {
++                    quantity++;
++                    quantitySpan.textContent = quantity;
++                } else if (text === '-' && quantity > 1) {
++                    quantity--;
++                    quantitySpan.textContent = quantity;
++                } else if (text === '🗑') {
++                    // 删除商品
++                    btn.closest('.cart-item').remove();
++                }
++
++                // 更新总价（这里简化处理）
++                updateCartTotal();
++            });
++        });
++
++        function updateCartTotal() {
++            const cartItems = document.querySelectorAll('.cart-item');
++            let total = 0;
++            
++            cartItems.forEach(item => {
++                const priceText = item.querySelector('.cart-item-price').textContent;
++                const price = parseInt(priceText.replace('¥', ''));
++                const quantity = parseInt(item.querySelector('.quantity-controls span').textContent);
++                total += price * quantity;
++            });
++
++            const totalElement = document.querySelector('.total-price');
++            if (totalElement) {
++                totalElement.textContent = `合计：¥${total}`;
++            }
++        }
++
++        // 订单标签切换
++        document.querySelectorAll('.order-tab').forEach(tab => {
++            tab.addEventListener('click', () => {
++                document.querySelectorAll('.order-tab').forEach(t => {
++                    t.classList.remove('active');
++                });
++                tab.classList.add('active');
++                
++                // 这里可以根据选中的标签过滤订单列表
++                // 为了演示，我们保持订单列表不变
++            });
++        });
++
++        // 个人中心菜单点击事件
++        document.querySelectorAll('.menu-item').forEach(item => {
++            item.addEventListener('click', () => {
++                const menuText = item.querySelector('.menu-text').textContent;
++                alert(`点击了：${menuText}`);
++            });
++        });
++
++        // 商品卡片点击效果
++        document.querySelectorAll('.product-card').forEach(card => {
++            card.addEventListener('click', () => {
++                const productName = card.querySelector('.product-name').textContent;
++                alert(`查看商品：${productName}`);
++            });
++        });
++
++        // 分类图标点击效果
++        document.querySelectorAll('.category-item').forEach(item => {
++            item.addEventListener('click', () => {
++                const categoryName = item.querySelector('.category-name').textContent;
++                alert(`进入分类：${categoryName}`);
++                // 可以切换到商品分类页面
++                switchPage('category');
++            });
++        });
++
++        // 结算按钮点击事件
++        const checkoutBtn = document.querySelector('.checkout-btn');
++        if (checkoutBtn) {
++            checkoutBtn.addEventListener('click', () => {
++                alert('跳转到结算页面');
++            });
++        }
++
++        // 初始化购物车总价
++        updateCartTotal();
++
++        console.log('移动端电商App原型已加载完成！');
++    </script>
++</body>
++</html>
+EOF
+)
